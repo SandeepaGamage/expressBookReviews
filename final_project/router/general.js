@@ -1,10 +1,13 @@
 const express = require('express');
+const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-// Task 6: Register a new user
+const BASE_URL = "http://localhost:5000";
+
+
 public_users.post("/register", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -31,7 +34,7 @@ public_users.get('/', function (req, res) {
   return res.status(200).send(JSON.stringify(books, null, 4));
 });
 
-// Task 2: Get book details based on ISBN
+
 public_users.get('/isbn/:isbn', function (req, res) {
   const isbn = req.params.isbn;
   const book = books[isbn];
@@ -43,7 +46,7 @@ public_users.get('/isbn/:isbn', function (req, res) {
   }
 });
   
-// Task 3: Get book details based on author
+
 public_users.get('/author/:author', function (req, res) {
   const author = req.params.author;
   const keys = Object.keys(books); // Get all keys (ISBNs) of the books object
@@ -63,7 +66,7 @@ public_users.get('/author/:author', function (req, res) {
   }
 });
 
-// Task 4: Get all books based on title
+
 public_users.get('/title/:title', function (req, res) {
   const title = req.params.title;
   const keys = Object.keys(books);
@@ -83,7 +86,7 @@ public_users.get('/title/:title', function (req, res) {
   }
 });
 
-// Task 5: Get book review
+
 public_users.get('/review/:isbn', function (req, res) {
   const isbn = req.params.isbn;
   const book = books[isbn];
@@ -95,4 +98,112 @@ public_users.get('/review/:isbn', function (req, res) {
   }
 });
 
+
+async function getAllBooks() {
+  try {
+    const response = await axios.get(`${BASE_URL}/`);
+    console.log("Task 10 - All books:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Task 10 - Error fetching books:", error.message);
+    throw error;
+  }
+}
+
+// Equivalent version using Promise callbacks (.then/.catch) instead of async-await
+function getAllBooksPromise() {
+  return axios.get(`${BASE_URL}/`)
+    .then(response => {
+      console.log("Task 10 (Promise) - All books:", response.data);
+      return response.data;
+    })
+    .catch(error => {
+      console.error("Task 10 (Promise) - Error fetching books:", error.message);
+      throw error;
+    });
+}
+
+
+async function getBookByISBN(isbn) {
+  try {
+    const response = await axios.get(`${BASE_URL}/isbn/${isbn}`);
+    console.log(`Task 11 - Book with ISBN ${isbn}:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Task 11 - Error fetching book with ISBN ${isbn}:`, error.message);
+    throw error;
+  }
+}
+
+// Equivalent version using Promise callbacks
+function getBookByISBNPromise(isbn) {
+  return axios.get(`${BASE_URL}/isbn/${isbn}`)
+    .then(response => {
+      console.log(`Task 11 (Promise) - Book with ISBN ${isbn}:`, response.data);
+      return response.data;
+    })
+    .catch(error => {
+      console.error(`Task 11 (Promise) - Error fetching book with ISBN ${isbn}:`, error.message);
+      throw error;
+    });
+}
+
+
+async function getBooksByAuthor(author) {
+  try {
+    const response = await axios.get(`${BASE_URL}/author/${author}`);
+    console.log(`Task 12 - Books by author ${author}:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Task 12 - Error fetching books by author ${author}:`, error.message);
+    throw error;
+  }
+}
+
+// Equivalent version using Promise callbacks
+function getBooksByAuthorPromise(author) {
+  return axios.get(`${BASE_URL}/author/${author}`)
+    .then(response => {
+      console.log(`Task 12 (Promise) - Books by author ${author}:`, response.data);
+      return response.data;
+    })
+    .catch(error => {
+      console.error(`Task 12 (Promise) - Error fetching books by author ${author}:`, error.message);
+      throw error;
+    });
+}
+
+
+async function getBooksByTitle(title) {
+  try {
+    const response = await axios.get(`${BASE_URL}/title/${title}`);
+    console.log(`Task 13 - Books with title ${title}:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Task 13 - Error fetching books with title ${title}:`, error.message);
+    throw error;
+  }
+}
+
+// Equivalent version using Promise callbacks
+function getBooksByTitlePromise(title) {
+  return axios.get(`${BASE_URL}/title/${title}`)
+    .then(response => {
+      console.log(`Task 13 (Promise) - Books with title ${title}:`, response.data);
+      return response.data;
+    })
+    .catch(error => {
+      console.error(`Task 13 (Promise) - Error fetching books with title ${title}:`, error.message);
+      throw error;
+    });
+}
+
 module.exports.general = public_users;
+module.exports.getAllBooks = getAllBooks;
+module.exports.getAllBooksPromise = getAllBooksPromise;
+module.exports.getBookByISBN = getBookByISBN;
+module.exports.getBookByISBNPromise = getBookByISBNPromise;
+module.exports.getBooksByAuthor = getBooksByAuthor;
+module.exports.getBooksByAuthorPromise = getBooksByAuthorPromise;
+module.exports.getBooksByTitle = getBooksByTitle;
+module.exports.getBooksByTitlePromise = getBooksByTitlePromise;
